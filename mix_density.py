@@ -28,7 +28,7 @@ class MixtureDensityNetwork(nn.Module):
         return self.pi_network(x), self.normal_network(x)
 
     def loss(self, x, y):
-        pi, normal = self.forward(x)
+        pi, normal = self._forward(x)
         loglik = normal.log_prob(y.unsqueeze(1).expand_as(normal.loc))
         loglik = torch.sum(loglik, dim=2)
         loss = -torch.logsumexp(torch.log(pi.probs.clamp(min=1e-8, max=1-1e-8)) + loglik, dim=1)
@@ -37,7 +37,7 @@ class MixtureDensityNetwork(nn.Module):
     def forward(self, x):
         pi, normal = self._forward(x)
         samples = torch.sum(pi.sample().unsqueeze(2) * normal.sample(), dim=1)
-        return self.max_action * torch.tanh(samples)
+        return samples.clamp(min=-self.max_action, max=self.max_action)
 
 
 class MixtureDiagNormalNetwork(nn.Module):
