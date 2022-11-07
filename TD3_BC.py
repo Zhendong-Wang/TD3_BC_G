@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from mix_density import MixtureDensityNetwork
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -74,9 +75,13 @@ class TD3_BC(object):
 		noise_clip=0.5,
 		policy_freq=2,
 		alpha=2.5,
+		n_components=3,
 	):
 
-		self.actor = Actor(state_dim, action_dim, max_action).to(device)
+		# self.actor = Actor(state_dim, action_dim, max_action).to(device)
+		self.actor = MixtureDensityNetwork(state_dim, action_dim,
+										   n_components=n_components,
+										   max_action=max_action).to(device)
 		self.actor_target = copy.deepcopy(self.actor)
 		self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=3e-4)
 
