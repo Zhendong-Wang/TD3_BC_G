@@ -55,7 +55,11 @@ if __name__ == "__main__":
 	# TD3 + BC
 	parser.add_argument("--alpha", default=2.5)
 	parser.add_argument("--normalize", default=True)
+
+	parser.add_argument("--device", default=0, type=int)
 	args = parser.parse_args()
+
+	args.device = torch.device(f"cuda:{args.device}" if torch.cuda.is_available() else "cpu")
 
 	file_name = f"{args.policy}_{args.env}_{args.seed}"
 	print("---------------------------------------")
@@ -84,6 +88,7 @@ if __name__ == "__main__":
 		"state_dim": state_dim,
 		"action_dim": action_dim,
 		"max_action": max_action,
+		"device": args.device,
 		"discount": args.discount,
 		"tau": args.tau,
 		# TD3

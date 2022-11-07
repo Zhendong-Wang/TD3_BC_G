@@ -6,9 +6,6 @@ import torch.nn.functional as F
 from mix_density import MixtureDensityNetwork
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 class Actor(nn.Module):
 	def __init__(self, state_dim, action_dim, max_action):
 		super(Actor, self).__init__()
@@ -69,6 +66,7 @@ class TD3_BC(object):
 		state_dim,
 		action_dim,
 		max_action,
+		device,
 		discount=0.99,
 		tau=0.005,
 		policy_noise=0.2,
