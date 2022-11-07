@@ -94,12 +94,13 @@ class TD3_BC(object):
 		self.noise_clip = noise_clip
 		self.policy_freq = policy_freq
 		self.alpha = alpha
+		self.device = device
 
 		self.total_it = 0
 
 
 	def select_action(self, state):
-		state = torch.FloatTensor(state.reshape(1, -1)).to(device)
+		state = torch.FloatTensor(state.reshape(1, -1)).to(self.device)
 		return self.actor(state).cpu().data.numpy().flatten()
 
 
