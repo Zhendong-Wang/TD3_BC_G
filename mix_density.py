@@ -31,7 +31,7 @@ class MixtureDensityNetwork(nn.Module):
         pi, normal = self._forward(x)
         loglik = normal.log_prob(y.unsqueeze(1).expand_as(normal.loc))
         loglik = torch.sum(loglik, dim=2)
-        loss = -torch.logsumexp(torch.log(pi.probs.clamp(min=1e-8, max=1-1e-8)) + loglik, dim=1)
+        loss = -torch.logsumexp(torch.log(pi.probs.clamp(min=1e-8, max=1-1e-8)) + loglik, dim=1).mean()
         return loss
 
     def forward(self, x):
