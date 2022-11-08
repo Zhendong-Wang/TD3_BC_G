@@ -91,7 +91,7 @@ num_epochs = 1000
 batch_size = 100
 iterations = int(num_data / batch_size)
 
-img_dir = f'toy_imgs/{args.dir}'
+img_dir = f'toy_imgs/ql'
 os.makedirs(img_dir, exist_ok=True)
 
 num_eval = 100

@@ -9,7 +9,10 @@ from toy_helpers import Data_Sampler, reward_fun
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--seed", default=2022, type=int)
+parser.add_argument('--device', default=0, type=int)
 args = parser.parse_args()
+
+device = f"cuda:{args.device}" if torch.cuda.is_available() else "cpu"
 
 seed = args.seed
 
@@ -38,7 +41,7 @@ def generate_data(num, device = 'cpu'):
 torch.manual_seed(seed)
 np.random.seed(seed)
 
-device = 'cuda:0'
+device = args.device
 num_data = int(10000)
 data_sampler = generate_data(num_data, device)
 
