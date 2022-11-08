@@ -110,28 +110,9 @@ class TD3_BC(object):
 		# Sample replay buffer 
 		state, action, reward = replay_buffer.sample(batch_size)
 
-		with torch.no_grad():
-			# Select action according to policy and add clipped noise
-			# noise = (
-			# 	torch.randn_like(action) * self.policy_noise
-			# ).clamp(-self.noise_clip, self.noise_clip)
-			
-			next_action = (
-				self.actor_target(next_state)
-			).clamp(-self.max_action, self.max_action)
+		current_q1, current_q2 = self.critic(state, action)
+		critic_loss = F.mse_loss(current_q1, reward) + F.mse_loss(current_q2, reward)
 
-			# Compute the target Q value
-			target_Q1, target_Q2 = self.critic_target(next_state, next_action)
-			target_Q = torch.min(target_Q1, target_Q2)
-			target_Q = reward + not_done * self.discount * target_Q
-
-		# Get current Q estimates
-		current_Q1, current_Q2 = self.critic(state, action)
-
-		# Compute critic loss
-		critic_loss = F.mse_loss(current_Q1, target_Q) + F.mse_loss(current_Q2, target_Q)
-
-		# Optimize the critic
 		self.critic_optimizer.zero_grad()
 		critic_loss.backward()
 		self.critic_optimizer.step()
