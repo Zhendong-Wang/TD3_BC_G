@@ -96,7 +96,7 @@ os.makedirs(img_dir, exist_ok=True)
 
 num_eval = 100
 
-fig, axs = plt.subplots(1, 4, figsize=(5.5 * 4, 5))
+fig, axs = plt.subplots(1, 2, figsize=(5.5 * 2, 5))
 axis_lim = 1.1
 
 # Plot reward function
@@ -125,68 +125,9 @@ axs[0].set_title('Add Reward', fontsize=25)
 axs[0].legend(loc='best', fontsize=15, title_fontsize=15)
 #fig.colorbar(c, ax=axs[0])
 
-from TD3_BC_toy import TD3_BC
+from TD3_BC_toy2 import TD3_BC
 
 policy_freq = 1
-
-# Plot TD3+BC_GM with K=2
-K = 2
-td3_bc_gm = TD3_BC(state_dim=state_dim,
-                   action_dim=action_dim,
-                   max_action=max_action,
-                   device=device,
-                   discount=discount,
-                   tau=tau,
-                   policy_freq=policy_freq,
-                   n_components=K)
-
-
-for i in range(num_epochs):
-    for _ in range(iterations):
-        td3_bc_gm.train(data_sampler,
-                        batch_size=batch_size)
-
-    if i % 100 == 0:
-        print(f'Epoch: {i}')
-
-new_state = torch.zeros((num_eval, 2), device=device)
-new_action = td3_bc_gm.actor(new_state)
-new_action = new_action.detach().cpu().numpy()
-axs[1].scatter(new_action[:, 0], new_action[:, 1], alpha=0.3)
-axs[1].set_xlim(-axis_lim, axis_lim)
-axs[1].set_ylim(-axis_lim, axis_lim)
-axs[1].set_xlabel('x', fontsize=20)
-axs[1].set_ylabel('y', fontsize=20)
-axs[1].set_title(f'TD3+BC-GM (K={K})', fontsize=25)
-
-# Plot TD3+BC_GM with K=3
-K = 3
-td3_bc_gm = TD3_BC(state_dim=state_dim,
-                   action_dim=action_dim,
-                   max_action=max_action,
-                   device=device,
-                   discount=discount,
-                   tau=tau,
-                   policy_freq=policy_freq,
-                   n_components=K)
-
-for i in range(num_epochs):
-    for _ in range(iterations):
-        td3_bc_gm.train(data_sampler,
-                        batch_size=batch_size)
-
-    if i % 100 == 0:
-        print(f'Epoch: {i}')
-
-new_state = torch.zeros((num_eval, 2), device=device)
-new_action = td3_bc_gm.actor(new_state)
-new_action = new_action.detach().cpu().numpy()
-axs[2].scatter(new_action[:, 0], new_action[:, 1], alpha=0.3)
-axs[2].set_xlim(-axis_lim, axis_lim)
-axs[2].set_ylim(-axis_lim, axis_lim)
-axs[2].set_xlabel('x', fontsize=20)
-axs[2].set_ylabel('y', fontsize=20)
-axs[2].set_title(f'TD3+BC-GM (K={K})', fontsize=25)
 
 # Plot TD3+BC_GM with K=2
 K = 4
@@ -210,14 +151,14 @@ for i in range(num_epochs):
 new_state = torch.zeros((num_eval, 2), device=device)
 new_action = td3_bc_gm.actor(new_state)
 new_action = new_action.detach().cpu().numpy()
-axs[3].scatter(new_action[:, 0], new_action[:, 1], alpha=0.3)
-axs[3].set_xlim(-axis_lim, axis_lim)
-axs[3].set_ylim(-axis_lim, axis_lim)
-axs[3].set_xlabel('x', fontsize=20)
-axs[3].set_ylabel('y', fontsize=20)
-axs[3].set_title(f'TD3+BC-GM (K={K})', fontsize=25)
+axs[1].scatter(new_action[:, 0], new_action[:, 1], alpha=0.3)
+axs[1].set_xlim(-axis_lim, axis_lim)
+axs[1].set_ylim(-axis_lim, axis_lim)
+axs[1].set_xlabel('x', fontsize=20)
+axs[1].set_ylabel('y', fontsize=20)
+axs[1].set_title(f'TD3+BC-GM (K={K})', fontsize=25)
 
-file_name = f'ql_ablation.pdf'
+file_name = f'test_K.pdf'
 
 fig.tight_layout()
 fig.savefig(os.path.join(img_dir, file_name))
