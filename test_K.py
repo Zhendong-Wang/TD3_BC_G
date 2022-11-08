@@ -20,7 +20,8 @@ parser.add_argument("--dir", default='whole_grad', type=str)
 parser.add_argument("--r_fun", default='no', type=str)
 parser.add_argument("--lr", default=3e-4, type=float)
 parser.add_argument('--hidden_dim', default=128, type=int)
-parser.add_argument("--mode", default='whole_grad', type=str)
+
+parser.add_argument("--mode", default='bc', type=str)
 args = parser.parse_args()
 
 r_fun_std = 0.25
@@ -87,11 +88,11 @@ beta_schedule = 'vp'
 # eta = 10.0
 # lr = 3e-4
 
-num_epochs = 1000
+num_epochs = 200
 batch_size = 100
 iterations = int(num_data / batch_size)
 
-img_dir = f'toy_imgs/ql'
+img_dir = f'toy_imgs/test'
 os.makedirs(img_dir, exist_ok=True)
 
 num_eval = 100
@@ -125,7 +126,10 @@ axs[0].set_title('Add Reward', fontsize=25)
 axs[0].legend(loc='best', fontsize=15, title_fontsize=15)
 #fig.colorbar(c, ax=axs[0])
 
-from TD3_BC_toy2 import TD3_BC
+if args.mode == 'bc':
+    from TD3_BC_toy2 import TD3_BC
+else:
+    from TD3_BC_toy import TD3_BC
 
 policy_freq = 1
 
@@ -158,7 +162,7 @@ axs[1].set_xlabel('x', fontsize=20)
 axs[1].set_ylabel('y', fontsize=20)
 axs[1].set_title(f'TD3+BC-GM (K={K})', fontsize=25)
 
-file_name = f'test_K.pdf'
+file_name = f'test_K_{args.mode}.pdf'
 
 fig.tight_layout()
 fig.savefig(os.path.join(img_dir, file_name))

@@ -87,7 +87,7 @@ beta_schedule = 'vp'
 # eta = 10.0
 # lr = 3e-4
 
-num_epochs = 1000
+num_epochs = 200
 batch_size = 100
 iterations = int(num_data / batch_size)
 
