@@ -108,14 +108,55 @@ class TD3_BC(object):
 		self.total_it += 1
 
 		# Sample replay buffer 
-		state, action, next_state, reward, not_done = replay_buffer.sample(batch_size)
+		state, action, reward = replay_buffer.sample(batch_size)
 
-		actor_loss = self.actor.loss(state, action)
+		with torch.no_grad():
+			# Select action according to policy and add clipped noise
+			# noise = (
+			# 	torch.randn_like(action) * self.policy_noise
+			# ).clamp(-self.noise_clip, self.noise_clip)
+			
+			next_action = (
+				self.actor_target(next_state)
+			).clamp(-self.max_action, self.max_action)
 
-		# Optimize the actor
-		self.actor_optimizer.zero_grad()
-		actor_loss.backward()
-		self.actor_optimizer.step()
+			# Compute the target Q value
+			target_Q1, target_Q2 = self.critic_target(next_state, next_action)
+			target_Q = torch.min(target_Q1, target_Q2)
+			target_Q = reward + not_done * self.discount * target_Q
+
+		# Get current Q estimates
+		current_Q1, current_Q2 = self.critic(state, action)
+
+		# Compute critic loss
+		critic_loss = F.mse_loss(current_Q1, target_Q) + F.mse_loss(current_Q2, target_Q)
+
+		# Optimize the critic
+		self.critic_optimizer.zero_grad()
+		critic_loss.backward()
+		self.critic_optimizer.step()
+
+		# Delayed policy updates
+		if self.total_it % self.policy_freq == 0:
+
+			# Compute actor loss
+			pi = self.actor(state)
+			Q = self.critic.Q1(state, pi)
+			lmbda = self.alpha/Q.abs().mean().detach()
+
+			actor_loss = -lmbda * Q.mean() + self.actor.loss(state, action)
+			
+			# Optimize the actor 
+			self.actor_optimizer.zero_grad()
+			actor_loss.backward()
+			self.actor_optimizer.step()
+
+			# Update the frozen target models
+			for param, target_param in zip(self.critic.parameters(), self.critic_target.parameters()):
+				target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
+
+			for param, target_param in zip(self.actor.parameters(), self.actor_target.parameters()):
+				target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
 
 
 	def save(self, filename):

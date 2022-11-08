@@ -75,7 +75,7 @@ axs[0].set_xlabel('x', fontsize=20)
 axs[0].set_ylabel('y', fontsize=20)
 axs[0].set_title('Ground Truth', fontsize=25)
 
-from TD3_BC_only_bc import TD3_BC
+from TD3_BC_toy2 import TD3_BC
 
 # Plot TD3+BC_GM with K=2
 K = 2

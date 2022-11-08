@@ -6,7 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import argparse
 
-from toy_experiments.toy_helpers import Data_Sampler, reward_fun, Ill_Reward
+from toy_helpers import Data_Sampler, reward_fun, Ill_Reward
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--ill", action='store_true')
@@ -125,7 +125,7 @@ axs[0].set_title('Add Reward', fontsize=25)
 axs[0].legend(loc='best', fontsize=15, title_fontsize=15)
 #fig.colorbar(c, ax=axs[0])
 
-from TD3_BC import TD3_BC
+from TD3_BC_toy import TD3_BC
 
 policy_freq = 1
 
